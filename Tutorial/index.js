@@ -11,17 +11,10 @@ const storage = new Storage({
 
 const bucketName = 'contenedor-prueba';
 
-async function downloadFile() {
-    const options = {
-      destination: destFileName,
-    };
-  
-    // Downloads the file
-    await storage.bucket(bucketName).file(fileName).download(options);
-  
-    console.log(
-      `gs://${bucketName}/${fileName} downloaded to ${destFileName}.`
-    );
-  }
-  
-  downloadFile().catch(console.error);
+async function getBucketMetadata() {
+  const [metadata] = await storage.bucket(bucketName).getMetadata();
+
+  console.log(metadata);
+}
+
+getBucketMetadata();
