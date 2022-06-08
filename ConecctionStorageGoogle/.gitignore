@@ -1,0 +1,24 @@
+# Numerous always-ignore extensions
+*.diff
+*.log
+*~
+*.env
+
+# OS or Editor folders
+.DS_Store
+.cache
+.project
+.settings
+.tmproj
+nbproject
+Thumbs.db
+
+# NPM packages folder.
+node_modules/
+
+# Other folders
+cert/
+logs/
+uploads/
+keys/
+temps/
