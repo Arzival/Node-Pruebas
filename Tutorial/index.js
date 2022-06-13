@@ -18,6 +18,7 @@ function initStorage() {
 }
 //este cambio es de mi prueba
 //cambio 2
+//cambio desde master
 export default {
   getData: async (req, res) => {
     try {
