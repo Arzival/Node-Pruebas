@@ -17,6 +17,7 @@ function initStorage() {
   return storage;
 }
 //este cambio es de mi prueba
+//cambio 2
 export default {
   getData: async (req, res) => {
     try {
