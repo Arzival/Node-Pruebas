@@ -8,7 +8,7 @@ function initBigQuery() {
   });
   return bigQuery;
 }
-
+//Cambio desde mi rama para test de merge
 function initStorage() {
   const storage = new Storage({
     projectId: 'pruebanode-352614',
