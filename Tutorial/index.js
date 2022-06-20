@@ -58,17 +58,25 @@ async function getBucktData() {
     // inicializar instancia de Storage
     const storage = initStorage();
     // nombre del contenedor al que nos vamos a conectar
-    const fileName = '10/fiscal/kitten.png';
-    const destFileName = 'kitten.png';
-    const options = {
-      destination: destFileName,
-    };
     const bucketName = 'contenedor-prueba';
     // Metadatos del contenedor para probar que tenemos conexion
-    const contents = await storage.bucket(bucketName).file(fileName).download(options);
-
-  console.log(
-    `Contents of gs://${bucketName}/${fileName} downloaded to ${contents}`
-  );
+    const listFilesName = [];
+    const options = {
+      prefix: '10',
+    };
+    const listFilesName11 = [];
+    const options11 = {
+      prefix: '11',
+    };
+    const [files11] = await storage.bucket(bucketName).getFiles(options11);
+    const [files] = await storage.bucket(bucketName).getFiles(options);
+    console.log('Files:');
+    files.forEach(file => {
+          listFilesName.push(file.name)
+    });
+    filles11.forEach(file => {
+          listFilesName11.push(file.name)
+    });
+    console.log(listFilesName);
 }
 getBucktData();
