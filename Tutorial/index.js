@@ -75,16 +75,14 @@ async function getBucktData() {
   for (let i = 1; i < total; i++) {
     const filname = `${listFilesName[i]}`;
     const name = filname.split('/')[2];
-    const fReferencia = listFilesName[i].split('/')[0];
-    const fCarpeta = listFilesName[i].split('/')[1];
     const date = new Date();
-    let path = `./temporales/${fReferencia}`;
+    let path = `./temporales/${listFilesName[i].split('/')[0]}`;
 
     if (!fs.existsSync(path)) {
       fs.mkdirSync(path);
     }
 
-    path = `./temporales/${fReferencia}/${fCarpeta}`;
+    path = `./temporales/${listFilesName[i].split('/')[0]}/${listFilesName[i].split('/')[1]}`;
     if (!fs.existsSync(path)) {
       fs.mkdirSync(path);
     }
