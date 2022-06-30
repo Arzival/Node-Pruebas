@@ -77,8 +77,14 @@ async function getBucktData() {
     const name = filname.split('/')[2];
     const fReferencia = listFilesName[i].split('/')[0];
     const fCarpeta = listFilesName[i].split('/')[1];
-    const path = `./${fReferencia}/${fCarpeta}`;
+    const date = new Date();
+    let path = `./temporales/${fReferencia}`;
 
+    if (!fs.existsSync(path)) {
+      fs.mkdirSync(path);
+    }
+
+    path = `./temporales/${fReferencia}/${fCarpeta}`;
     if (!fs.existsSync(path)) {
       fs.mkdirSync(path);
     }
@@ -87,7 +93,7 @@ async function getBucktData() {
       destination: `./${path}/${name}`,
     };
     await storage.bucket(bucketName).file(filname).download(options);
-    console.log(listFilesName[i].split('/')[2]);
+    // console.log(listFilesName[i].split('/')[2]);
   }
 
   // const output = fs.createWriteStream('./ref.zip');
