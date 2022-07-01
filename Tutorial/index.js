@@ -61,63 +61,69 @@ async function getBucktData() {
   const storage = initStorage();
   // nombre del contenedor al que nos vamos a conectar
   const bucketName = 'contenedor-prueba';
+  // arreglo donde van a ir los archivos
   const listFilesName = [];
+  // Carpeta donde se encuentran los archivos la ruta debe ser exacta para que no tarde en encontrarlos
   const options = {
     prefix: '10/fiscal/',
   };
+  // Obtenemos el listado de archivos
   const [files] = await storage.bucket(bucketName).getFiles(options);
   console.log('Files:');
+  // Recorremos el listado de archivos para obtener el nombre y la ruta
   files.forEach(file => {
     listFilesName.push(file.name)
   });
-
+  // contamos el numero de archivos, no es necasario crear una constante pero es una buena practica
   const total = listFilesName.length;
+  //hacemos un ciclo donde el tope es el total de nuestros archivos, para iniciar el proceso de descarga
   for (let i = 1; i < total; i++) {
-    const filname = `${listFilesName[i]}`;
-    const name = filname.split('/')[2];
+    // la constante date nos ayudara para que cada archivo tenga un nombre diferente
     const date = new Date();
+    // la ruta donde se va a guardar el archivo, la carpeta temporal debe de estar creada con anticipacion
     let path = `./temporales/${listFilesName[i].split('/')[0]}`;
-
+    // creamos la carpeta si no existe, en este caso la primera carpeta creada es la referencia
     if (!fs.existsSync(path)) {
       fs.mkdirSync(path);
     }
-
+    //la siguiente carpeta que se debe crear es la de fiscal, aqui es en donde se guardara una parte de nuestros archivos
     path = `./temporales/${listFilesName[i].split('/')[0]}/${listFilesName[i].split('/')[1]}`;
+    // creamos la carpeta si no existe, el sistema de creacion de carpetas depende mucho de como esten guardados los archivos en Storage
     if (!fs.existsSync(path)) {
       fs.mkdirSync(path);
     }
-
+    // pasamos la ruta y el nombre con el que se guardara el archivo
     const options = {
-      destination: `./${path}/${name}`,
+      destination: `./${path}/${listFilesName[i].split('/')[2]}`,
     };
-    await storage.bucket(bucketName).file(filname).download(options);
+    await storage.bucket(bucketName).file(listFilesName[i]).download(options);
     // console.log(listFilesName[i].split('/')[2]);
   }
+  // creamos el archivo zip con un nivel de compresion de 9
+  const output = fs.createWriteStream('./ref.zip');
+  const archive = archiver('zip', {
+    zlib: { level: 9 }
+  });
+  // en cuanto se crea el archivo zip, se ejecuta el siguiente codigo que va a eliminar los archivos descargados para no tener alamacenado mas de lo que se necesita
+  output.on('close', function () {
+    console.log(archive.pointer() + ' total bytes');
+    console.log('archiver has been finalized and the output file descriptor has closed.');
+    try {
+      for (let i = 1; i < total; i++) {
+        fs.unlinkSync(`./files/${listFilesName[i].split('/')[2]}`);
+      }
+      console.log('File removed')
+    } catch (err) {
+      console.error('Something wrong happened removing the file', err)
+    }
+  });
 
-  // const output = fs.createWriteStream('./ref.zip');
-  // const archive = archiver('zip', {
-  //   zlib: { level: 9 }
-  // });
-
-  // output.on('close', function () {
-  //   console.log(archive.pointer() + ' total bytes');
-  //   console.log('archiver has been finalized and the output file descriptor has closed.');
-  //   try {
-  //     for (let i = 1; i < total; i++) {
-  //       fs.unlinkSync(`./files/${listFilesName[i].split('/')[2]}`);
-  //     }
-  //     console.log('File removed')
-  //   } catch (err) {
-  //     console.error('Something wrong happened removing the file', err)
-  //   }
-  // });
-
-  // archive.on('error', function (err) {
-  //   throw err;
-  // });
-  // archive.pipe(output);
-  // archive.directory('./files', true, { date: new Date() });
-  // archive.finalize();
+  archive.on('error', function (err) {
+    throw err;
+  });
+  archive.pipe(output);
+  archive.directory('./files', true, { date: new Date() });
+  archive.finalize();
 
 }
 getBucktData();
